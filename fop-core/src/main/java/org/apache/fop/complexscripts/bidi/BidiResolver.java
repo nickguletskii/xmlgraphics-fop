@@ -29,6 +29,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.apache.fop.area.LineArea;
 import org.apache.fop.area.inline.InlineArea;
+import org.apache.fop.fo.FONode;
 import org.apache.fop.fo.pagination.PageSequence;
 
 // CSOFF: LineLengthCheck
@@ -53,11 +54,20 @@ public final class BidiResolver {
      * @param ps a page sequence FO instance
      */
     public static void resolveInlineDirectionality(PageSequence ps) {
+        resolveInlineDirectionality(ps, new Stack());
+    }
+
+    /**
+     * Resolve inline directionality.
+     * @param fObj an object FO instance
+     * @param rangesStack a stack of delimited text ranges
+     */
+    public static void resolveInlineDirectionality(FONode fObj, Stack rangesStack) {
         if (log.isDebugEnabled()) {
-            log.debug("BD: RESOLVE: " + ps);
+            log.debug("BD: RESOLVE: " + fObj);
         }
         // 1. collect delimited text ranges
-        List ranges = ps.collectDelimitedTextRanges(new Stack());
+        List ranges = fObj.collectDelimitedTextRanges(rangesStack);
         if (log.isDebugEnabled()) {
             dumpRanges("BD: RESOLVE: RANGES:", ranges);
         }

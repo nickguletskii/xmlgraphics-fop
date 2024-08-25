@@ -20,7 +20,10 @@
 package org.apache.fop.fo.flow;
 
 import java.util.Iterator;
+import java.util.Stack;
 
+import org.apache.fop.complexscripts.bidi.BidiResolver;
+import org.apache.fop.complexscripts.bidi.DelimitedTextRange;
 import org.xml.sax.Locator;
 
 import org.apache.fop.accessibility.StructureTreeElement;
@@ -194,6 +197,17 @@ public abstract class AbstractRetrieveMarker extends FObjMixed {
         throws FOPException {
         cloneSubtree(marker.getChildNodes(), this,
                         marker, propertyList);
+        if (this.getUserAgent().isComplexScriptFeaturesEnabled()) {
+            FONode child;
+            Iterator parentIter = this.getChildNodes();
+            while (parentIter.hasNext()) {
+                child = (FONode) parentIter.next();
+                Stack rangesStack = new Stack();
+                rangesStack.add(new DelimitedTextRange(this));
+                BidiResolver.resolveInlineDirectionality(child, rangesStack);
+            }
+        }
+
         handleWhiteSpaceFor(this, null);
     }
 
